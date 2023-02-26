@@ -8,25 +8,15 @@ export class Favorites {
   }
 
   load() {
-    this.entries = [
-      {
-        login: 'DaviF91',
-        name: 'Davi Ferreira',
-        public_repos: '76',
-        followers: '120000'
-      },
-      {
-        login: 'diego3g',
-        name: 'Diego Fernandes',
-        public_repos: '76',
-        followers: '120000'
-      }
-    ]
+    //pegar um item .getItem
+    this.entries = JSON.parse(localStorage.getItem('@github-favorites:')) || []
   }
   delete(user) {
     //Higher-order funcitions (map, filter, find, reduce)
     const filteredEntries = this.entries.filter(
       entry => entry.login !== user.login)
+    this.entries = filteredEntries
+    this.update()
   }
 }
 //classe que vai criar a visualização e eventos do HTML
