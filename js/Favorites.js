@@ -29,8 +29,24 @@ export class Favorites {
     this.entries = JSON.parse(localStorage.getItem('@github-favorites:')) || []
   }
 
-  async add(username){
-    const user = await GithubUser.search(username) 
+  //Salvar no localStorage-> usa o setItem, o nome do item utiliza o mesmo utilizado no localStorage, e atraves do JSON.stringify(), ele transforma o objeto dentro do JS para um objeto do tipo texto (string) para salvar no localStorage
+  save() {
+    localStorage.setItem('@github-favorites:', JSON.stringify(this.entries))
+  }
+
+  async add(username) {
+    try {
+      const user = await GithubUser.search(username)
+      if (user.login === undefined) {
+        throw new Error('Usuário não encontrado!')
+      }
+
+      this.entries = [user, ...this.entries] //a cada entrada de dados ele pega os elementos e vai adicionando um após o outro
+      this.update()
+      this.save()
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
   delete(user) {
@@ -40,6 +56,8 @@ export class Favorites {
     )
     this.entries = filteredEntries
     this.update()
+    //utiliza a função save() para salvar a deleção feita
+    this.save()
   }
 }
 
@@ -57,8 +75,8 @@ export class FavoritesView extends Favorites {
   onAdd() {
     const addButton = this.root.querySelector('.search button')
     addButton.onclick = () => {
-      const {value} = this.root.querySelector('.search input')
-      
+      const { value } = this.root.querySelector('.search input')
+
       this.add(value)
     }
   }
